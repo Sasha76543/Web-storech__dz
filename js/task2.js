@@ -1,73 +1,35 @@
-let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+// Створіть просту форму з полями вводу і кнопкою, яка зберігає дані в localStorage.
+//  При наступному завантаженні сторінки зчитайте збережені дані з localStorage та відобразіть їх у відповідних полях вводу.
+// Створіть форму з полями для вводу логіна та пароля. Зберігайте дані про користувача в localStorage
+// та перевіряйте, чи є користувач з таким логіном та паролем при вході на сторінку.
 
-// Функція для збереження закладок в localStorage
-function saveBookmarks() {
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+function saveUserData(login, password) {
+    const user = {
+        login: login,
+        password: password
+    };
+    localStorage.setItem('userData', JSON.stringify(user));
 }
 
-// Функція для оновлення списку закладок на сторінці
-function updateBookmarkList() {
-    const bookmarkList = document.getElementById('bookmark-list');
-    bookmarkList.innerHTML = '';  // Очищення поточного списку
 
-    bookmarks.forEach((bookmark, index) => {
-        const li = document.createElement('li');
-        li.className = 'bookmark-item';
-
-        const a = document.createElement('a');
-        a.href = bookmark.url;
-        a.textContent = bookmark.name;
-        a.target = '_blank';
-
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Редагувати';
-        editButton.onclick = () => editBookmark(index);
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Видалити';
-        deleteButton.onclick = () => deleteBookmark(index);
-
-        li.appendChild(a);
-        li.appendChild(editButton);
-        li.appendChild(deleteButton);
-        bookmarkList.appendChild(li);
-    });
-}
-
-// Додавання нової закладки
-document.getElementById('bookmark-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const name = document.getElementById('bookmark-name').value;
-    const url = document.getElementById('bookmark-url').value;
-
-    bookmarks.push({ name, url });
-    saveBookmarks();
-    updateBookmarkList();
-
-    // Очищення форми
-    document.getElementById('bookmark-name').value = '';
-    document.getElementById('bookmark-url').value = '';
-});
-
-// Редагування закладки
-function editBookmark(index) {
-    const newName = prompt('Введіть нову назву:', bookmarks[index].name);
-    const newUrl = prompt('Введіть новий URL:', bookmarks[index].url);
-
-    if (newName && newUrl) {
-        bookmarks[index] = { name: newName, url: newUrl };
-        saveBookmarks();
-        updateBookmarkList();
+function loadUserData() {
+    const savedData = localStorage.getItem('userData');
+    if (savedData) {
+        const user = JSON.parse(savedData);
+        document.getElementById('login').value = user.login;
+        document.getElementById('password').value = user.password;
     }
 }
 
-// Видалення закладки
-function deleteBookmark(index) {
-    bookmarks.splice(index, 1);
-    saveBookmarks();
-    updateBookmarkList();
-}
 
-// Початкове завантаження списку закладок
-updateBookmarkList();
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    const login = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
+    saveUserData(login, password);
+    alert('Дані збережено у localStorage');
+});
+
+window.onload = function() {
+    loadUserData();
+};
